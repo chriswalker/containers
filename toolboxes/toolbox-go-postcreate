@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+# Post-creation script for Go toolboxes; when creating the toolbox,
+# various paths are not configured making full installation of Go
+# tooling problematic. This )hopefully) temporary script should
+# be run once the Go toolbox has been created with `toolbox-create-go`
+
+# golangci-lint
+echo "Installing golangci-lint..."
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /opt/go/bin v1.41.1
+
+# Various Go tools
+declare -A tools=(
+    [goimports]=golang.org/x/tools/cmd/goimports
+    [gogetdoc]=github.com/zmb3/gogetdoc
+    [gopls]=golang.org/x/tools/gopls
+)
+
+for name in "${!tools[@]}"; do
+	echo "Installing $name..."
+    go get ${tools[$name]}
+done

@@ -1,0 +1,35 @@
+#!/bin/bash -e
+
+BOLD='\e[1m'
+BLUE='\e[0;34m'
+CYAN='\e[0;36m'
+GREEN='\e[0;32m'
+RED='\e[0;31m'
+NC='\033[0m'
+
+if [[ -z $1 ]]; then
+    echo -e "${RED}Please provide a name for the toolbox.${NC}"
+    exit
+fi
+
+echo -e "${BLUE}Creating toolbox container '$1'...${NC}"
+toolbox create -c $1
+
+# Alias the toolbox run commands
+run="toolbox run -c $1"
+
+# Copy over Kitty terminfo, otherwise various things will be a bit borked
+echo -e "${CYAN}Copying over kitty terminfo...${NC}"
+podman cp $TERMINFO/x/xterm-kitty $1:/usr/share/terminfo/x/
+
+# Update everything
+echo -e "${CYAN}Updating packages...${NC}"
+$run sudo dnf update -yq
+
+# Install command-line basics - note $HOME is mounted into the toolbox
+# when starting, so the toolbox implicitly gets access to any binaries
+# stored under $HOME/.local/bin
+echo -e "${CYAN}Installing basic packages...${NC}"
+$run sudo dnf install -yq fish kakoune
+
+echo -e "${GREEN}Base toolbox container '$1' created!${NC}"

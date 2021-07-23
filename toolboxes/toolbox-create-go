@@ -1,0 +1,31 @@
+#!/bin/bash -e
+BOLD='\e[1m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+NC='\e[0m'
+
+container_name=go
+
+if [[ -n $1 ]]; then
+    container_name=$1
+fi
+
+# Create base toolbox container
+toolbox-create-base $container_name
+
+run="toolbox run -c $container_name"
+
+# Install Go-specific development tooling
+echo -e "${BLUE}Installing Go and dev tooling...${NC}"
+
+# Provide a location for installed Go tooling to live, so it doesn't
+# pollute home folder. Shell config will set $GOPATH etc appropriately
+# if it detects the shell is running inside a toolbox
+$run sudo mkdir -p /opt/go/{bin,pkg}
+# Assumes the user creating this toolbox will be the only one entering it
+$run sudo chown -R $USER:$USER /opt/go
+
+$run sudo dnf copr enable atim/kakoune -y
+$run sudo dnf install -yq go kak-lsp
+
+echo -e "${GREEN}Done! Run toolbox-go-postcreate to install Go tools.${NC}"
