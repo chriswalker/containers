@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+NC='\e[0m'
+
+container_name=shell
+
+if [[ -n "${1}" ]]; then
+    container_name="${1}"
+fi
+
+# Create base toolbox container
+toolbox-create-base "${container_name}"
+
+run="toolbox run -c ${container_name}"
+
+echo -e "${BLUE}Installing shell tooling...${NC}"
+
+# We assume here shellcheck is (probably installed on the host; mounting
+# $HOME will expose it to the containeri. Here, install tools/programs that
+# aren;t installed by default on Silverblue, but are useful for scripting
+$run sudo dnf install -yq openssl netcat
+
+echo -e "${GREEN}Done!${NC}"
