@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
 # Post-creation script for Go toolboxes; when creating the toolbox,
 # various paths are not configured making full installation of Go
@@ -18,5 +18,5 @@ declare -A tools=(
 
 for name in "${!tools[@]}"; do
 	echo "Installing $name..."
-    go get ${tools[$name]}
+    go get "${tools[$name]}"
 done
