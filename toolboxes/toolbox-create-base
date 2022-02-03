@@ -17,10 +17,6 @@ toolbox create -c "${1}"
 # Alias the toolbox run commands
 run="toolbox run -c ${1}"
 
-# Copy over Kitty terminfo, otherwise various things will be a bit borked
-echo -e "${CYAN}Copying over kitty terminfo...${NC}"
-podman cp "${TERMINFO}"/x/xterm-kitty "${1}":/usr/share/terminfo/x/
-
 # Update everything
 echo -e "${CYAN}Updating packages...${NC}"
 $run sudo dnf update -yq
